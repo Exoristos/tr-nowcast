@@ -1,0 +1,3 @@
+dist/
+node_modules/
+# assets_root tamamen izlenir: Stitch kaynak sayfaları + CI'nin kopyaladığı site verisi

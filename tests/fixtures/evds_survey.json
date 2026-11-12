@@ -1,0 +1,40 @@
+{
+  "totalCount": 5,
+  "items": [
+    {
+      "Tarih": "2026-6",
+      "TP_BEK_S01_A_U": "1.36000000",
+      "UNIXTIME": {
+        "$numberLong": "1780261200"
+      }
+    },
+    {
+      "Tarih": "2026-7",
+      "TP_BEK_S01_A_U": "1.68000000",
+      "UNIXTIME": {
+        "$numberLong": "1782853200"
+      }
+    },
+    {
+      "Tarih": "2026-8",
+      "TP_BEK_S01_A_U": "1.67000000",
+      "UNIXTIME": {
+        "$numberLong": "1785531600"
+      }
+    },
+    {
+      "Tarih": "2026-9",
+      "TP_BEK_S01_A_U": "2.12000000",
+      "UNIXTIME": {
+        "$numberLong": "1788210000"
+      }
+    },
+    {
+      "Tarih": "2026-10",
+      "TP_BEK_S01_A_U": "2.11000000",
+      "UNIXTIME": {
+        "$numberLong": "1790802000"
+      }
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "note": "değerler sentetik, yalnız biçim kanıtı — gerçek TÜİK verisi değildir. Bu dosya TÜİK SDMX servisinden (nsiws.tuik.gov.tr/rest/data/TR,DF_TUFE_SDMX_TT10,1.0?format=JSON) beklenen JSONstat 2.0 dataset yapısını temsil eder; alan adları TÜİK resmî SDMX web servis dokümantasyonundan (veriportali.tuik.gov.tr, erişim 2026-11-05) alınmıştır.",
+  "class": "dataset",
+  "id": ["FREQ", "REF_AREA", "DEGISIM", "time"],
+  "size": [1, 1, 2, 6],
+  "updated": "2026-11-03T10:00:00",
+  "label": "Tüketici fiyat endeksi ve değişim oranları (2025=100)",
+  "value": [
+    98.1, 99.24, 100.9, 101.02, 102.55, 103.77,
+    1.15, 1.16, 1.67, 0.12, 1.51, 1.19
+  ],
+  "dimension": {
+    "FREQ": {
+      "label": "Sıklık",
+      "category": {
+        "index": { "M": 0 },
+        "label": { "M": "Aylık" }
+      }
+    },
+    "REF_AREA": {
+      "label": "Ülke",
+      "category": {
+        "index": { "TR": 0 },
+        "label": { "TR": "Türkiye" }
+      }
+    },
+    "DEGISIM": {
+      "label": "Değişim türü",
+      "category": {
+        "index": { "IDX": 0, "AYLIK": 1 },
+        "label": {
+          "IDX": "Genel endeks (2025=100)",
+          "AYLIK": "Aylık değişim (%)"
+        }
+      }
+    },
+    "time": {
+      "label": "Dönem",
+      "category": {
+        "index": {
+          "2025-01": 0,
+          "2025-02": 1,
+          "2025-03": 2,
+          "2025-04": 3,
+          "2025-05": 4,
+          "2025-06": 5
+        },
+        "label": {
+          "2025-01": "2025-Ocak",
+          "2025-02": "2025-Şubat",
+          "2025-03": "2025-Mart",
+          "2025-04": "2025-Nisan",
+          "2025-05": "2025-Mayıs",
+          "2025-06": "2025-Haziran"
+        }
+      }
+    }
+  }
+}

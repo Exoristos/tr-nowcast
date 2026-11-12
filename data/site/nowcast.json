@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-11-08",
+  "cutoff_date": "2026-11-08",
+  "target_month": "2026-11",
+  "forecasts": [
+    {
+      "model": "naive",
+      "point": 2.5796108722582645,
+      "lower": 0.9221881314975982,
+      "upper": 4.237033613018931,
+      "ok": true,
+      "error": null
+    },
+    {
+      "model": "seasonal_naive",
+      "point": 0.8650220546492449,
+      "lower": -0.8013802174264129,
+      "upper": 2.5314243267249026,
+      "ok": true,
+      "error": null
+    },
+    {
+      "model": "arima",
+      "point": 2.1844580923980366,
+      "lower": 0.20117143598279452,
+      "upper": 4.167744748813279,
+      "ok": true,
+      "error": null
+    },
+    {
+      "model": "ets",
+      "point": 2.1843539017489477,
+      "lower": 0.11325453487015213,
+      "upper": 4.255453268627743,
+      "ok": true,
+      "error": null
+    },
+    {
+      "model": "chronos2_uni",
+      "point": 1.6589463949203491,
+      "lower": 0.8740136027336121,
+      "upper": 2.8828604221343994,
+      "ok": true,
+      "error": null
+    },
+    {
+      "model": "timesfm3_mv",
+      "point": 1.6925066709518433,
+      "lower": 0.6708962917327881,
+      "upper": 3.0677525997161865,
+      "ok": true,
+      "error": null
+    },
+    {
+      "model": "bridge",
+      "point": 2.2144972360973934,
+      "lower": 0.8478084978640559,
+      "upper": 3.581185974330731,
+      "ok": true,
+      "error": null
+    },
+    {
+      "model": "anket_pka",
+      "point": null,
+      "lower": null,
+      "upper": null,
+      "ok": false,
+      "error": "anket_pka: 2026-11 anket satırı kesitte yok — komşu ay satırı kullanılmaz (Review Focus 5)"
+    }
+  ],
+  "yillik": {
+    "point": 31.466146748031253,
+    "lower": 29.51899503000388,
+    "upper": 33.26325289221612,
+    "temel": "son 11 gerçek ay + hedef tahmini"
+  }
+}

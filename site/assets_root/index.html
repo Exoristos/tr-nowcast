@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<!-- Göreli taban: kök sayfa tek derinlikte; base tüm göreli yolları dağıtım
+     köküne çözer (workers.dev kökü veya /tr-nowcast/). -->
+<base href="./"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<title>TR-NOWCAST | Açık Veri Enflasyon Tahmin Motoru</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;family=Inter:wght@400;450;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      * {
+        border-radius: 0 !important;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #09090b;
+        color: #f4f4f5;
+      }
+      body { overscroll-behavior: none; }
+      .tabular-nums { font-variant-numeric: tabular-nums; }
+    }
+    ::-webkit-scrollbar { display: none; }
+</style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            surface: "#09090b",
+            "surface-subtle": "#0c0d10",
+            "surface-panel": "#111217",
+            "border-hairline": "#27272a",
+            "border-dark": "#18181b",
+            "text-primary": "#f4f4f5",
+            "text-secondary": "#a1a1aa",
+            "text-muted": "#71717a",
+            "text-dim": "#52525b",
+            "accent-green": "#10b981",
+            "accent-red": "#ef4444",
+            "accent-sky": "#38bdf8"
+          },
+          fontFamily: {
+            sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+            mono: ["JetBrains Mono", "SFMono-Regular", "Menlo", "monospace"],
+            serif: ["Newsreader", "Georgia", "serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface text-text-primary font-sans antialiased min-h-screen flex flex-col selection:bg-zinc-800 selection:text-text-primary">
+<!-- 1. ÜST HEADER (HAIRLINE BİTİŞİK) -->
+<header class="border-b border-border-hairline bg-surface sticky top-0 z-50">
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 h-12 flex items-center justify-between gap-4 font-mono text-xs">
+<div class="flex items-center gap-4">
+<a href="./" style="color:inherit;text-decoration:none" aria-label="TR-NOWCAST ana sayfa"><span class="font-bold text-sm tracking-tight text-text-primary">TR-NOWCAST</span></a>
+<span class="text-text-muted hidden md:inline border-l border-border-hairline pl-4 font-sans text-xs">
+        Türkiye enflasyonunu, resmî açıklamadan önce tahmin eden açık veri ürünü
+      </span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 px-2 py-0.5 border border-border-hairline bg-surface-subtle text-[11px] text-text-muted">
+<span class="w-1.5 h-1.5 bg-accent-green inline-block"></span>
+<span class="text-text-secondary">canlı (otomatik CI)</span>
+</div>
+<div class="flex border border-border-hairline text-[11px]">
+<span class="px-2 py-0.5 bg-zinc-800 text-text-primary font-medium">TR</span>
+<button class="px-2 py-0.5 text-text-dim hover:text-text-secondary border-l border-border-hairline" type="button">EN</button>
+</div>
+<a class="hidden sm:inline-flex items-center gap-1 text-[11px] text-text-secondary hover:text-text-primary border border-border-hairline px-2.5 py-0.5 bg-surface-subtle transition-colors" href="https://github.com/Exoristos/tr-nowcast" rel="noopener noreferrer" target="_blank">
+<span class="text-text-muted">git:</span> tr-nowcast
+      </a>
+</div>
+</div>
+</header>
+<!-- STATUS / METADATA SUB-BAR -->
+<div class="border-b border-border-hairline bg-surface-subtle">
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-1.5 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-text-muted">
+<div data-alan="rapor-ay">…</div>
+<div class="flex items-center gap-4">
+<span>Son model çalıştırması: <span class="text-text-secondary" data-alan="son-calistirma">…</span></span>
+<span class="hidden md:inline text-zinc-700">|</span>
+<span class="hidden md:inline">TÜİK Açıklaması: <strong class="text-text-primary font-medium" data-alan="aciklama-tarih">…</strong></span>
+</div>
+</div>
+</div>
+<main class="w-full flex-1 max-w-[1440px] mx-auto border-x border-border-hairline">
+<!-- Veri hatası bandı: JSON 404/bozuksa görünür olur; sahte sayı gösterilmez -->
+<div id="veri-hatasi" class="hidden border-b border-accent-red/60 bg-accent-red/10 px-4 sm:px-6 py-2 font-mono text-[11px] text-accent-red"></div>
+<!-- 2. ABOVE THE FOLD: HAIRLINE GRID (SOL: TAHMİN / SAĞ: ZAMAN SERİSİ GRAFİĞİ) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 bg-border-hairline gap-px border-b border-border-hairline">
+<!-- SOL ÜST: KASIM NOWCAST VE İSTATİSTİKSEL PROJEKSİYON -->
+<div class="lg:col-span-5 bg-surface p-6 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-border-hairline font-mono text-xs">
+<span class="text-text-secondary font-medium" data-alan="hero-ay">…</span>
+<span class="text-text-dim text-[11px]">Robust Medyan</span>
+</div>
+<div class="flex items-baseline gap-4 my-5">
+<span class="font-mono text-6xl font-bold tracking-tight text-text-primary tabular-nums" data-alan="nowcast-deger">…</span>
+<div class="space-y-0.5 font-mono text-xs">
+<span class="text-accent-green font-medium block" data-alan="nowcast-delta">…</span>
+<span class="text-text-dim text-[11px]" data-alan="onceki-gercek">…</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-px bg-border-hairline p-px border border-border-hairline my-4 font-mono text-xs">
+<div class="bg-surface-subtle p-3">
+<div class="text-[11px] text-text-muted">Türetilmiş Yıllık Enflasyon</div>
+<div class="text-lg font-bold text-text-primary tabular-nums mt-0.5" data-alan="yillik-deger">…</div>
+<div class="text-[10px] text-text-dim mt-0.5" data-alan="yillik-bant">…</div>
+</div>
+<div class="bg-surface-subtle p-3">
+<div class="text-[11px] text-text-muted">Hedef Açıklama Tarihi</div>
+<div class="text-xs font-semibold text-text-primary mt-1" data-alan="aciklama-kutu">…</div>
+<div class="text-[10px] text-text-dim mt-0.5">Saat 10:00 (TÜİK)</div>
+</div>
+</div>
+<p class="font-mono text-xs text-text-muted">
+          <span data-alan="model-sayisi">…</span> bağımsız modelin çıktısı değerlendirildi. Konsensüs yayılımı: <span class="text-text-primary tabular-nums" data-alan="yayilim">…</span>
+</p>
+</div>
+<!-- MODEL DAĞILIM ARALIĞI Cetveli -->
+<div class="pt-5 mt-5 border-t border-border-hairline">
+<div class="flex items-center justify-between font-mono text-[11px] text-text-muted mb-2">
+<span>MODEL DAĞILIM ARALIĞI (MİN – MEDYAN – MAKS)</span>
+<span class="text-text-dim" data-alan="cetvel-olcek">…</span>
+</div>
+<div class="relative w-full h-7 bg-surface-panel border border-border-hairline my-2">
+<!-- Scale ticks -->
+<div class="absolute inset-0 flex justify-between px-2 pointer-events-none opacity-20">
+<span class="border-l border-zinc-500 h-full"></span>
+<span class="border-l border-zinc-500 h-full"></span>
+<span class="border-l border-zinc-500 h-full"></span>
+<span class="border-l border-zinc-500 h-full"></span>
+<span class="border-l border-zinc-500 h-full"></span>
+</div>
+<!-- Dağılım aralığı ve pimler: konumlar nowcast.json'dan JS ile hesaplanır -->
+<div class="absolute top-1 bottom-1 bg-zinc-800 border-x border-zinc-600" data-alan="cetvel-span"></div>
+<div class="absolute top-0 bottom-0 w-px bg-zinc-400" data-alan="cetvel-max">
+<div class="absolute top-0 -translate-x-1/2 w-1 h-1 bg-zinc-300"></div>
+</div>
+<div class="absolute top-0 bottom-0 w-0.5 bg-accent-green z-10" data-alan="cetvel-pin">
+<div class="absolute -top-1 -translate-x-[2px] w-1.5 h-1.5 bg-accent-green"></div>
+</div>
+</div>
+<div class="grid grid-cols-3 font-mono text-[11px] pt-1 text-text-muted">
+<div>Alt: <span class="text-text-primary tabular-nums" data-alan="cetvel-min-deger">…</span> <span data-alan="cetvel-min-model">…</span></div>
+<div class="text-center font-medium text-text-primary">Medyan: <span class="text-accent-green tabular-nums" data-alan="cetvel-medyan-deger">…</span></div>
+<div class="text-right">Üst: <span class="text-text-primary tabular-nums" data-alan="cetvel-max-deger">…</span> <span data-alan="cetvel-max-model">…</span></div>
+</div>
+</div>
+</div>
+<!-- SAĞ ÜST: TAHMİNLER GERÇEĞE KARŞI (ZAMAN SERİSİ ÇİZGİ GRAFİĞİ) -->
+<div class="lg:col-span-7 bg-surface p-6 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-border-hairline mb-4">
+<div class="font-mono text-xs text-text-secondary font-medium">Tahminler Gerçeğe Karşı (Out-of-Sample Sınama)</div>
+<div class="flex border border-border-hairline font-mono text-[11px]" id="chart-filter-group">
+<button class="px-2 py-0.5 text-text-dim hover:text-text-secondary transition-colors" data-pencere="m12" onclick="setActiveFilter(this)" type="button">Son 12 Ay</button>
+<button class="px-2 py-0.5 bg-zinc-800 text-text-primary font-medium border-x border-border-hairline transition-colors" data-pencere="m24" onclick="setActiveFilter(this)" type="button">Son 24 Ay</button>
+<button class="px-2 py-0.5 text-text-dim hover:text-text-secondary transition-colors" data-pencere="all" onclick="setActiveFilter(this)" type="button">Tüm Seri (2019+)</button>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 pb-3 mb-3 border-b border-border-hairline font-mono text-[11px] text-text-muted">
+<div>Medyan MAE (12 Ay): <span class="text-text-primary tabular-nums" data-alan="stat-mae-12">…</span></div>
+<div>Yön Tutarlılığı: <span class="text-text-primary tabular-nums" data-alan="stat-yon">…</span></div>
+<div>Bant İçi İsabet: <span class="text-text-primary tabular-nums" data-alan="stat-bant">…</span></div>
+</div>
+<!-- Compact Time Series SVG Chart — içerik chart.json'dan JS ile üretilir -->
+<div class="w-full h-[220px]">
+<svg class="w-full h-full" fill="none" id="tahmin-grafik" viewbox="0 0 900 240"></svg>
+</div>
+</div>
+<div class="pt-3 border-t border-border-hairline flex items-center justify-between font-mono text-[10px] text-text-dim">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1.5"><span class="w-2 h-0.5 bg-white inline-block"></span> TÜİK Gerçekleşen</span>
+<span class="flex items-center gap-1.5"><span class="w-2 h-0.5 border-b border-dashed border-zinc-400 inline-block"></span> Model Medyanı</span>
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 bg-zinc-800 border border-zinc-600 inline-block"></span> %80 Bant</span>
+</div>
+<div data-alan="grafik-not">…</div>
+</div>
+</div>
+</section>
+<!-- 3. BEŞLİ MAKRO GÖSTERGE HAIRLINE GRID BLOĞU (YAN YANA 5 EŞİT SÜTUN) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 bg-border-hairline gap-px border-b border-border-hairline">
+<!-- Gösterge 1: USD/TRY (Enflasyonist Baskı -> Amber) -->
+<div class="bg-surface p-4 flex flex-col justify-between">
+<div class="flex items-start justify-between font-mono text-[11px]">
+<span class="text-text-muted">USD/TRY</span>
+<span class="text-amber-400 tabular-nums" data-alan="usd_aylik-delta">…</span>
+</div>
+<div class="my-2">
+<div class="font-mono text-2xl font-bold text-text-primary tabular-nums" data-alan="usd_aylik-deger">…</div>
+<div class="font-mono text-[10px] text-text-dim" data-alan="usd_aylik-ay">…</div>
+</div>
+<div class="h-8 w-full my-1 border-b border-border-hairline pb-1">
+<svg class="w-full h-full text-amber-500/70" fill="none" preserveaspectratio="none" viewbox="0 0 100 24">
+<polyline points="" stroke="currentColor" stroke-width="1.2" data-alan="usd_aylik-spark"></polyline>
+</svg>
+</div>
+<div class="flex items-center justify-between font-mono text-[10px] text-text-dim mt-1">
+<span>TCMB EVDS</span>
+<span>Günlük seri</span>
+</div>
+</div>
+<!-- Gösterge 2: Brent Petrol (Enflasyonist Baskı -> Amber) -->
+<div class="bg-surface p-4 flex flex-col justify-between">
+<div class="flex items-start justify-between font-mono text-[11px]">
+<span class="text-text-muted">Brent Petrol</span>
+<span class="text-amber-400 tabular-nums" data-alan="brent_aylik-delta">…</span>
+</div>
+<div class="my-2">
+<div class="font-mono text-2xl font-bold text-text-primary tabular-nums" data-alan="brent_aylik-deger">…</div>
+<div class="font-mono text-[10px] text-text-dim">Aylık Ortalama</div>
+</div>
+<div class="h-8 w-full my-1 border-b border-border-hairline pb-1">
+<svg class="w-full h-full text-amber-500/70" fill="none" preserveaspectratio="none" viewbox="0 0 100 24">
+<polyline points="" stroke="currentColor" stroke-width="1.2" data-alan="brent_aylik-spark"></polyline>
+</svg>
+</div>
+<div class="flex items-center justify-between font-mono text-[10px] text-text-dim mt-1">
+<span>FRED</span>
+<span>DCOILBRENTEU</span>
+</div>
+</div>
+<!-- Gösterge 3: Global Gıda (Dezenflasyonist Baskı -> Yeşil) -->
+<div class="bg-surface p-4 flex flex-col justify-between">
+<div class="flex items-start justify-between font-mono text-[11px]">
+<span class="text-text-muted">FAO Gıda</span>
+<span class="text-emerald-400 tabular-nums" data-alan="fao_aylik-delta">…</span>
+</div>
+<div class="my-2">
+<div class="font-mono text-2xl font-bold text-text-primary tabular-nums" data-alan="fao_aylik-deger">…</div>
+<div class="font-mono text-[10px] text-text-dim" data-alan="fao_aylik-ay">…</div>
+</div>
+<div class="h-8 w-full my-1 border-b border-border-hairline pb-1">
+<svg class="w-full h-full text-emerald-500/70" fill="none" preserveaspectratio="none" viewbox="0 0 100 24">
+<polyline points="" stroke="currentColor" stroke-width="1.2" data-alan="fao_aylik-spark"></polyline>
+</svg>
+</div>
+<div class="flex items-center justify-between font-mono text-[10px] text-text-dim mt-1">
+<span>FAO Food Index</span>
+<span>Gecikmeli (T-1)</span>
+</div>
+</div>
+<!-- Gösterge 4: TCMB Beklenti Anketi (Dezenflasyonist Eğilim -> Yeşil) -->
+<div class="bg-surface p-4 flex flex-col justify-between">
+<div class="flex items-start justify-between font-mono text-[11px]">
+<span class="text-text-muted">TCMB Beklenti</span>
+<span class="text-emerald-400 tabular-nums" data-alan="anket_pka-delta">…</span>
+</div>
+<div class="my-2">
+<div class="font-mono text-2xl font-bold text-text-primary tabular-nums" data-alan="anket_pka-deger">…</div>
+<div class="font-mono text-[10px] text-text-dim" data-alan="anket_pka-ay">…</div>
+</div>
+<div class="h-8 w-full my-1 border-b border-border-hairline pb-1">
+<svg class="w-full h-full text-emerald-500/70" fill="none" preserveaspectratio="none" viewbox="0 0 100 24">
+<polyline points="" stroke="currentColor" stroke-width="1.2" data-alan="anket_pka-spark"></polyline>
+</svg>
+</div>
+<div class="flex items-center justify-between font-mono text-[10px] text-text-dim mt-1">
+<span>TCMB EVDS</span>
+<span>Aylık anket</span>
+</div>
+</div>
+<!-- Gösterge 5: TÜFE Gerçekleşen -->
+<div class="bg-surface p-4 flex flex-col justify-between">
+<div class="flex items-start justify-between font-mono text-[11px]">
+<span class="text-text-muted">TÜFE Gerçekleşen</span>
+<span class="text-text-dim tabular-nums">Baz Ay Kaydı</span>
+</div>
+<div class="my-2">
+<div class="font-mono text-2xl font-bold text-text-primary tabular-nums" data-alan="tufe_aylik-deger">…</div>
+<div class="font-mono text-[10px] text-text-dim" data-alan="tufe_aylik-ay">…</div>
+</div>
+<div class="h-8 w-full my-1 border-b border-border-hairline pb-1">
+<svg class="w-full h-full text-zinc-400" fill="none" preserveaspectratio="none" viewbox="0 0 100 24">
+<polyline points="" stroke="currentColor" stroke-width="1.2" data-alan="tufe_aylik-spark"></polyline>
+</svg>
+</div>
+<div class="flex items-center justify-between font-mono text-[10px] text-text-dim mt-1">
+<span>TÜİK / TCMB</span>
+<span>Kesinleşen</span>
+</div>
+</div>
+</section>
+<!-- 4. MODEL PERFORMANS KIYASLAMASI (TABLO) -->
+<section class="border-b border-border-hairline bg-surface">
+<div class="px-6 py-4 border-b border-border-hairline flex flex-col md:flex-row md:items-baseline justify-between gap-2">
+<div>
+<h2 class="font-mono text-sm font-semibold text-text-primary">Model Performans Kıyaslaması (Out-of-Sample MAE)</h2>
+<p class="font-mono text-xs text-text-muted mt-0.5">
+          Her model her ay yalnızca o güne kadar açıklanmış veriyle sınandı (as-of backtest, 2019→bugün).
+        </p>
+</div>
+<div class="font-mono text-[11px] text-text-dim">
+        Değerlendirme Metriği: Ortalama Mutlak Hata (MAE) · Sıralamak için sütun başlıklarına tıklayın
+      </div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-xs font-mono border-collapse" id="models-table">
+<thead>
+<tr class="border-b border-border-hairline bg-surface-subtle text-text-muted text-[11px] select-none">
+<th class="py-2.5 px-4 w-12 font-medium">#</th>
+<th class="py-2.5 px-4 font-medium cursor-pointer hover:text-text-primary transition-colors" onclick="sortTable(1)" title="Modele göre alfabetik sırala">
+<span class="inline-flex items-center gap-1">Model Adı <span class="sort-icon text-[10px] text-text-dim">↕</span></span>
+</th>
+<th class="py-2.5 px-4 font-medium">Mimari &amp; Menşei</th>
+<th class="py-2.5 px-4 text-right font-medium cursor-pointer hover:text-text-primary transition-colors" onclick="sortTable(3)" title="2019→Bugün MAE değerine göre sırala">
+<span class="inline-flex items-center gap-1 justify-end w-full">MAE (2019→Bugün) <span class="sort-icon text-[10px] text-text-dim">↕</span></span>
+</th>
+<th class="py-2.5 px-4 text-right font-medium cursor-pointer hover:text-text-primary transition-colors bg-zinc-900/60 text-text-primary" onclick="sortTable(4)" title="Son 24 Ay MAE değerine göre sırala">
+<span class="inline-flex items-center gap-1 justify-end w-full">MAE (Son 24 Ay) <span class="sort-icon text-accent-green font-bold">↓</span></span>
+</th>
+<th class="py-2.5 px-4 text-right font-medium">Durum / Nitelik</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-hairline" id="models-tbody">
+<tr class="hover:bg-surface-subtle transition-colors" data-model="anket_pka">
+<td class="py-2.5 px-4 text-text-dim tabular-nums row-idx">01</td>
+<td class="py-2.5 px-4 font-semibold text-text-primary">TCMB beklenti anketi</td>
+<td class="py-2.5 px-4 text-text-muted">Kurumsal Piyasa Uzmanları</td>
+<td class="py-2.5 px-4 text-right font-semibold text-text-primary tabular-nums" data-alan="mae-all"></td>
+<td class="py-2.5 px-4 text-right font-semibold text-text-primary tabular-nums" data-alan="mae-24"></td>
+<td class="py-2.5 px-4 text-right text-text-secondary">Referans (Benchmark)</td>
+</tr>
+<tr class="hover:bg-surface-subtle transition-colors" data-model="timesfm3_mv">
+<td class="py-2.5 px-4 text-text-dim tabular-nums row-idx">02</td>
+<td class="py-2.5 px-4 font-semibold text-text-primary">TimesFM 3.0</td>
+<td class="py-2.5 px-4 text-text-muted">Google · çok değişkenli TSFM</td>
+<td class="py-2.5 px-4 text-right text-text-primary tabular-nums" data-alan="mae-all"></td>
+<td class="py-2.5 px-4 text-right text-text-primary tabular-nums" data-alan="mae-24"></td>
+<td class="py-2.5 px-4 text-right text-text-muted">Zero-shot Temel Model</td>
+</tr>
+<tr class="hover:bg-surface-subtle transition-colors" data-model="chronos2_uni">
+<td class="py-2.5 px-4 text-text-dim tabular-nums row-idx">03</td>
+<td class="py-2.5 px-4 font-semibold text-text-primary">Chronos-2</td>
+<td class="py-2.5 px-4 text-text-muted">Amazon · zero-shot TSFM</td>
+<td class="py-2.5 px-4 text-right text-text-primary tabular-nums" data-alan="mae-all"></td>
+<td class="py-2.5 px-4 text-right text-text-primary tabular-nums" data-alan="mae-24"></td>
+<td class="py-2.5 px-4 text-right text-text-muted">Saf Derin Öğrenme</td>
+</tr>
+<tr class="hover:bg-surface-subtle transition-colors" data-model="seasonal_naive">
+<td class="py-2.5 px-4 text-text-dim tabular-nums row-idx">04</td>
+<td class="py-2.5 px-4 text-text-muted">Seasonal-naive</td>
+<td class="py-2.5 px-4 text-text-dim">Mevsimsel baz çıpa</td>
+<td class="py-2.5 px-4 text-right text-text-muted tabular-nums" data-alan="mae-all"></td>
+<td class="py-2.5 px-4 text-right text-text-muted tabular-nums" data-alan="mae-24"></td>
+<td class="py-2.5 px-4 text-right text-text-dim">Mevsimsel Çıpa</td>
+</tr>
+<tr class="hover:bg-surface-subtle transition-colors" data-model="ets">
+<td class="py-2.5 px-4 text-text-dim tabular-nums row-idx">05</td>
+<td class="py-2.5 px-4 text-text-secondary">ETS</td>
+<td class="py-2.5 px-4 text-text-dim">Üstel düzleme modeli</td>
+<td class="py-2.5 px-4 text-right text-text-muted tabular-nums" data-alan="mae-all"></td>
+<td class="py-2.5 px-4 text-right text-text-muted tabular-nums" data-alan="mae-24"></td>
+<td class="py-2.5 px-4 text-right text-text-dim">Düzleme Modeli</td>
+</tr>
+<tr class="hover:bg-surface-subtle transition-colors" data-model="bridge">
+<td class="py-2.5 px-4 text-text-dim tabular-nums row-idx">06</td>
+<td class="py-2.5 px-4 font-semibold text-text-primary">Bridge / MIDAS-lite</td>
+<td class="py-2.5 px-4 text-text-muted">Ekonometrik hibrit model</td>
+<td class="py-2.5 px-4 text-right text-text-primary tabular-nums" data-alan="mae-all"></td>
+<td class="py-2.5 px-4 text-right text-text-primary tabular-nums" data-alan="mae-24"></td>
+<td class="py-2.5 px-4 text-right text-text-muted">Döviz ve Emtia Duyarlı</td>
+</tr>
+<tr class="hover:bg-surface-subtle transition-colors" data-model="arima">
+<td class="py-2.5 px-4 text-text-dim tabular-nums row-idx">07</td>
+<td class="py-2.5 px-4 text-text-secondary">ARIMA(1,0,0)</td>
+<td class="py-2.5 px-4 text-text-dim">Klasik zaman serisi</td>
+<td class="py-2.5 px-4 text-right text-text-muted tabular-nums" data-alan="mae-all"></td>
+<td class="py-2.5 px-4 text-right text-text-muted tabular-nums" data-alan="mae-24"></td>
+<td class="py-2.5 px-4 text-right text-text-dim">Standart İstatistik</td>
+</tr>
+<tr class="hover:bg-surface-subtle transition-colors" data-model="naive">
+<td class="py-2.5 px-4 text-text-dim tabular-nums row-idx">08</td>
+<td class="py-2.5 px-4 text-text-muted">Naive</td>
+<td class="py-2.5 px-4 text-text-dim">Son değer çıpası</td>
+<td class="py-2.5 px-4 text-right text-text-muted tabular-nums" data-alan="mae-all"></td>
+<td class="py-2.5 px-4 text-right text-text-muted tabular-nums" data-alan="mae-24"></td>
+<td class="py-2.5 px-4 text-right text-text-dim">Baz Çıpa</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- 2 Sütunlu Kompakt Akademik Bülten Notları -->
+<div class="grid grid-cols-1 md:grid-cols-2 bg-border-hairline gap-px border-t border-border-hairline">
+<div class="p-4 bg-surface">
+<div class="font-mono text-xs font-semibold text-text-secondary mb-1">Gözlem 1: TSFM Hipotezi</div>
+<p class="font-sans text-xs text-text-muted leading-relaxed">
+          Son 24 ayda yapay zekâ modelleri (TimesFM 3.0, Chronos-2) klasik istatistiği belirgin farkla geçti. Zero-shot mimariler Türkiye rejim değişikliklerine daha hızlı uyum sağlamaktadır.
+        </p>
+</div>
+<div class="p-4 bg-surface">
+<div class="font-mono text-xs font-semibold text-text-secondary mb-1">Gözlem 2: Piyasa Anketi Üstünlüğü</div>
+<p class="font-sans text-xs text-text-muted leading-relaxed">
+          Uzun vadeli MAE lideri hâlâ TCMB Piyasa Katılımcıları Anketi'dir (<span class="tabular-nums" data-alan="lider-mae">…</span>). Otomatik makine öğrenmesi modelleri profesyonel analist konsensüsünü henüz sistematik olarak aşamamıştır.
+        </p>
+</div>
+</div>
+</section>
+<!-- 5. METODOLOJİ & VERİ BÜTÜNLÜĞÜ PROTOKOLÜ (SADELEŞTİRİLMİŞ 3 SATIR DİPNOT) -->
+<section class="border-b border-border-hairline bg-surface-subtle p-5 font-mono text-xs">
+<div class="text-[11px] font-semibold text-text-secondary uppercase tracking-wider mb-2.5">
+      Metodoloji &amp; Veri Bütünlüğü Protokolü
+    </div>
+<div class="space-y-1.5 text-text-muted text-[11px] leading-relaxed">
+<div>
+<span class="text-text-primary font-medium">1. As-of Sızıntı Koruması:</span> Her tahmin yalnızca tahmin gününde yayında olan veriyle üretilir (as-of registry; geleceğe dair veri geriye dönük kullanılamaz).
+      </div>
+<div>
+<span class="text-text-primary font-medium">2. Geriye Dönük Revizyon Yasağı:</span> Tahminler GitHub Actions CI koşumunda üretilir ve repoya commit'lenir; her koşum git geçmişinde saklanır, açıklama sonrası geriye dönük revize edilmez.
+      </div>
+<div>
+<span class="text-text-primary font-medium">3. Açık Kaynak &amp; Şeffaflık:</span> Kod, model ağırlıkları ve veri akış mimarisi (pipeline) herkese açıktır. Yatırım tavsiyesi değildir, bağımsız akademik araştırma ürünüdür.
+      </div>
+</div>
+</section>
+<!-- 5.5 MODEL NOTU: KENDİ MODELİMİZ BRIDGE / MIDAS-LITE -->
+<div class="border-b border-border-hairline bg-surface-subtle p-5 font-mono text-xs">
+<div class="text-[11px] font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+      Model Notu — Bridge / MIDAS-lite
+    </div>
+<p class="text-[11px] text-text-muted leading-relaxed">
+      Arenadaki tek kendi modelimiz: Bridge / MIDAS-lite, Enis Erdoğan tarafından bu projede sıfırdan geliştirildi (kod: <span class="text-text-secondary">src/trnowcast/models/bridge.py</span>). Yorumlanabilir bir ekonometrik bridge denklemidir — hedef serinin 1–3 aylık gecikmeleri ile USD/TRY, Brent ve FAO gıda endeksinin 1 aylık gecikmeleri Ridge regresyonuyla birleştirilir; tahmin bandı eğitim artıklarının %80 persentilinden kurulur. TimesFM ve Chronos-2'nin aksine hazır (zero-shot) bir model değildir.
+    </p>
+</div>
+<!-- 6. VERİME SOR (KOMPAKT TERMİNAL SORGU ÇUBUĞU) -->
+<section class="p-5 bg-surface border-b border-border-hairline font-mono text-xs">
+<div class="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+<div class="text-[11px] text-text-muted whitespace-nowrap">
+<span>VERİME SOR</span> <span class="text-text-dim">|</span>
+</div>
+<div class="flex-1 flex border border-border-hairline bg-surface-subtle focus-within:border-zinc-500">
+<input class="bg-transparent px-3 py-1.5 text-xs font-mono text-text-primary placeholder:text-text-dim focus:outline-none flex-1 border-0" id="sohbet-girdi" placeholder="Model çıktısı, formül veya gösterge kaynağını sorgulayın..." type="text"/>
+<button class="px-4 py-1.5 bg-zinc-800 text-text-primary hover:bg-zinc-700 text-xs font-medium border-l border-border-hairline" id="sohbet-gonder" type="button">
+          Sorgula
+        </button>
+</div>
+<div class="flex items-center gap-1.5 text-[11px] overflow-x-auto">
+<span class="text-text-dim">Örnek:</span>
+<button class="border border-border-hairline px-2 py-0.5 text-text-muted hover:text-text-primary hover:border-zinc-500 transition-colors whitespace-nowrap" type="button" data-alan="sohbet-ornek">
+          Kasım tahmini neden bu?
+        </button>
+<button class="border border-border-hairline px-2 py-0.5 text-text-muted hover:text-text-primary hover:border-zinc-500 transition-colors whitespace-nowrap" type="button" data-alan="sohbet-ornek">
+          Hangi model en iyi?
+        </button>
+</div>
+</div>
+<div class="hidden mt-3 border border-border-hairline bg-surface-subtle p-3 text-[11px]" id="sohbet-sonuc"></div>
+</section>
+</main>
+<!-- 7. ALT BİLGİ (KOMPAKT IZGARA FOOTER) -->
+<footer class="bg-surface text-text-dim text-[11px] font-mono border-t border-border-hairline">
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+<div>
+      Yapımcı: <span class="text-text-secondary">Enis Erdoğan</span> — İstatistik öğrencisi, Marmara Üniversitesi
+    </div>
+<div class="flex items-center gap-4">
+<span>Kaynaklar: <span class="text-text-secondary">TCMB EVDS · FRED · FAO · TÜİK</span></span>
+<span class="text-zinc-700">|</span>
+<a class="text-text-muted hover:text-text-primary underline" href="https://github.com/Exoristos/tr-nowcast" rel="noopener noreferrer" target="_blank">
+        github.com/Exoristos/tr-nowcast
+      </a>
+</div>
+</div>
+</footer>
+<script type="module" src="site.js"></script>
+</body></html>

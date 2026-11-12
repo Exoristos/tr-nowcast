@@ -1,0 +1,49 @@
+[project]
+name = "trnowcast"
+version = "0.1.0"
+description = "Türkiye enflasyon şimdi-tahmini (nowcasting) veri hattı"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas",
+    "pyarrow",
+    "requests",
+    "click",
+    "openpyxl",
+    "python-dateutil",
+    "statsmodels",
+    "torch>=2.11.0",
+    "chronos-forecasting>=2.3.2",
+    "scikit-learn>=1.9.1",
+    "timesfm[torch]>=3.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff",
+]
+
+[project.scripts]
+trnowcast = "trnowcast.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/trnowcast"]
+
+[tool.pytest.ini_options]
+addopts = "-m 'not live'"
+markers = ["live"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }

@@ -1,0 +1,233 @@
+{
+  "generated_at": "2026-11-08",
+  "windows": [
+    "2019→bugün",
+    "son 24 ay",
+    "tam geçmiş"
+  ],
+  "scores": [
+    {
+      "model": "anket_pka",
+      "window": "2019→bugün",
+      "mae": 0.8524429391178209,
+      "rmse": 1.6369300306564256,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.7021276595744681
+    },
+    {
+      "model": "anket_pka",
+      "window": "son 24 ay",
+      "mae": 0.47790237139059766,
+      "rmse": 0.6056162266343019,
+      "n": 24,
+      "n_failed": 0,
+      "hit80_rate": 0.7916666666666666
+    },
+    {
+      "model": "anket_pka",
+      "window": "tam geçmiş",
+      "mae": 0.8524429391178209,
+      "rmse": 1.6369300306564256,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.7021276595744681
+    },
+    {
+      "model": "arima",
+      "window": "2019→bugün",
+      "mae": 1.2471409183191315,
+      "rmse": 2.0784073774234244,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.7872340425531915
+    },
+    {
+      "model": "arima",
+      "window": "son 24 ay",
+      "mae": 1.0389039573914396,
+      "rmse": 1.4394344488894837,
+      "n": 24,
+      "n_failed": 0,
+      "hit80_rate": 0.875
+    },
+    {
+      "model": "arima",
+      "window": "tam geçmiş",
+      "mae": 1.2471409183191315,
+      "rmse": 2.0784073774234244,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.7872340425531915
+    },
+    {
+      "model": "bridge",
+      "window": "2019→bugün",
+      "mae": 1.214613226515404,
+      "rmse": 2.0897384650404165,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.6595744680851063
+    },
+    {
+      "model": "bridge",
+      "window": "son 24 ay",
+      "mae": 1.0253670368595733,
+      "rmse": 1.4235842628775037,
+      "n": 24,
+      "n_failed": 0,
+      "hit80_rate": 0.6666666666666666
+    },
+    {
+      "model": "bridge",
+      "window": "tam geçmiş",
+      "mae": 1.214613226515404,
+      "rmse": 2.0897384650404165,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.6595744680851063
+    },
+    {
+      "model": "chronos2_uni",
+      "window": "2019→bugün",
+      "mae": 1.1528020466733602,
+      "rmse": 2.0565646314564696,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.776595744680851
+    },
+    {
+      "model": "chronos2_uni",
+      "window": "son 24 ay",
+      "mae": 0.8507787573417763,
+      "rmse": 1.1190599939997796,
+      "n": 24,
+      "n_failed": 0,
+      "hit80_rate": 0.7916666666666666
+    },
+    {
+      "model": "chronos2_uni",
+      "window": "tam geçmiş",
+      "mae": 1.1528020466733602,
+      "rmse": 2.0565646314564696,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.776595744680851
+    },
+    {
+      "model": "ets",
+      "window": "2019→bugün",
+      "mae": 1.3885636059255824,
+      "rmse": 2.2854055525984434,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.7978723404255319
+    },
+    {
+      "model": "ets",
+      "window": "son 24 ay",
+      "mae": 0.9383322017271759,
+      "rmse": 1.259061470093539,
+      "n": 24,
+      "n_failed": 0,
+      "hit80_rate": 0.9166666666666666
+    },
+    {
+      "model": "ets",
+      "window": "tam geçmiş",
+      "mae": 1.3885636059255824,
+      "rmse": 2.2854055525984434,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.7978723404255319
+    },
+    {
+      "model": "naive",
+      "window": "2019→bugün",
+      "mae": 1.451105739742655,
+      "rmse": 2.187356045934893,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.6808510638297872
+    },
+    {
+      "model": "naive",
+      "window": "son 24 ay",
+      "mae": 1.281854019142481,
+      "rmse": 1.7189801651963401,
+      "n": 24,
+      "n_failed": 0,
+      "hit80_rate": 0.6666666666666666
+    },
+    {
+      "model": "naive",
+      "window": "tam geçmiş",
+      "mae": 1.451105739742655,
+      "rmse": 2.187356045934893,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.6808510638297872
+    },
+    {
+      "model": "seasonal_naive",
+      "window": "2019→bugün",
+      "mae": 1.7483916192284996,
+      "rmse": 2.950444840945954,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.6063829787234043
+    },
+    {
+      "model": "seasonal_naive",
+      "window": "son 24 ay",
+      "mae": 0.8687198571358042,
+      "rmse": 1.1370055868214473,
+      "n": 24,
+      "n_failed": 0,
+      "hit80_rate": 0.8333333333333334
+    },
+    {
+      "model": "seasonal_naive",
+      "window": "tam geçmiş",
+      "mae": 1.7483916192284996,
+      "rmse": 2.950444840945954,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.6063829787234043
+    },
+    {
+      "model": "timesfm3_mv",
+      "window": "2019→bugün",
+      "mae": 1.2502645980030673,
+      "rmse": 2.2401978978485073,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.8191489361702128
+    },
+    {
+      "model": "timesfm3_mv",
+      "window": "son 24 ay",
+      "mae": 0.8169438362581958,
+      "rmse": 1.06064109746027,
+      "n": 24,
+      "n_failed": 0,
+      "hit80_rate": 0.875
+    },
+    {
+      "model": "timesfm3_mv",
+      "window": "tam geçmiş",
+      "mae": 1.2502645980030673,
+      "rmse": 2.2401978978485073,
+      "n": 94,
+      "n_failed": 0,
+      "hit80_rate": 0.8191489361702128
+    }
+  ],
+  "median_mae_12m": 0.8702335436938399,
+  "yon_isabet_12m": {
+    "dogru": 70,
+    "toplam": 96,
+    "oran": 0.7291666666666666
+  },
+  "bant_icinde_12m": 0.8020833333333334
+}

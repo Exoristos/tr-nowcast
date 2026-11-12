@@ -1,0 +1,12 @@
+{
+  "items": [
+    {"UNIXTIME": 1730419200000, "Tarih": "01-11-2024", "TP_DK_USD_S_YTL": "34,2876"},
+    {"UNIXTIME": 1730505600000, "Tarih": "04-11-2024", "TP_DK_USD_S_YTL": "34,4435"},
+    {"UNIXTIME": 1730592000000, "Tarih": "05-11-2024", "TP_DK_USD_S_YTL": "34,5309"},
+    {"UNIXTIME": 1730678400000, "Tarih": "06-11-2024", "TP_DK_USD_S_YTL": "34,9517"},
+    {"UNIXTIME": 1730764800000, "Tarih": "07-11-2024", "TP_DK_USD_S_YTL": null},
+    {"UNIXTIME": 1730851200000, "Tarih": "08-11-2024", "TP_DK_USD_S_YTL": "-"},
+    {"UNIXTIME": 1730937600000, "Tarih": "11-11-2024", "TP_DK_USD_S_YTL": "34,6724"}
+  ],
+  "TransactionCount": 7
+}

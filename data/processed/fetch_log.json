@@ -1,0 +1,27 @@
+{
+  "fred": {
+    "durum": "ok",
+    "mesaj": "2 seri kaydedildi",
+    "zaman": "2026-11-06T13:28:05.775994+00:00"
+  },
+  "evds": {
+    "durum": "hata",
+    "mesaj": "turkiye_tufe_aylik_yuzde: kopya ay 2012-06 — dilim sızıntısı şüphesi",
+    "zaman": "2026-11-06T13:28:30.124762+00:00"
+  },
+  "anket": {
+    "durum": "ok",
+    "mesaj": "1 seri kaydedildi",
+    "zaman": "2026-11-06T13:28:35.016633+00:00"
+  },
+  "tuik": {
+    "durum": "hata",
+    "mesaj": "TÜİK SDMX Bearer token istiyor (SMS doğrulamalı API anahtarı gerekli) [HTTP 401]: data/raw/tuik_tufe.xlsx manuel yolunu kullanın",
+    "zaman": "2026-11-06T13:28:07.358640+00:00"
+  },
+  "fao": {
+    "durum": "ok",
+    "mesaj": "1 seri kaydedildi",
+    "zaman": "2026-11-06T13:28:05.937202+00:00"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "turkiye_tufe_endeks_fred": {
+    "name": "turkiye_tufe_endeks_fred",
+    "source": "FRED",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=TURCPIALLMINMEI",
+    "frequency": "aylık",
+    "units": "endeks (2015=100, mevsimsel düzeltilmemiş)",
+    "publication_lag_days": 45,
+    "license_note": "OECD verisi, FRED üzerinden; FRED atıf koşullarıyla serbest kullanım",
+    "nan_threshold": 0.05,
+    "warn_range": null,
+    "last_fetched": "2026-11-06T13:28:05.599154+00:00"
+  },
+  "brent_gunluk": {
+    "name": "brent_gunluk",
+    "source": "FRED",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DCOILBRENTEU",
+    "frequency": "günlük",
+    "units": "USD/varil",
+    "publication_lag_days": 2,
+    "license_note": "EIA verisi, FRED üzerinden; FRED atıf koşullarıyla serbest kullanım",
+    "nan_threshold": 0.05,
+    "warn_range": null,
+    "last_fetched": "2026-11-06T13:28:05.775306+00:00"
+  },
+  "usd_try_gunluk": {
+    "name": "usd_try_gunluk",
+    "source": "TCMB EVDS",
+    "url": "https://evds3.tcmb.gov.tr/igmevdsms-dis/series=TP.DK.USD.S.YTL&startDate=01-01-2010&endDate=06-11-2026&type=json",
+    "frequency": "günlük",
+    "units": "TL (1 USD karşılığı)",
+    "publication_lag_days": 1,
+    "license_note": "TCMB EVDS ücretsiz kayıt + anahtar (EVDS_API_KEY) gerektirir",
+    "nan_threshold": 0.05,
+    "warn_range": null,
+    "last_fetched": "2026-11-06T13:28:22.954711+00:00"
+  },
+  "turkiye_tufe_endeks": {
+    "name": "turkiye_tufe_endeks",
+    "source": "TCMB EVDS",
+    "url": "https://evds3.tcmb.gov.tr/igmevdsms-dis/series=TP.TUKFIY2025.GENEL&startDate=01-01-2010&endDate=06-11-2026&type=json",
+    "frequency": "aylık",
+    "units": "Endeks (2025=100)",
+    "publication_lag_days": 3,
+    "license_note": "TCMB EVDS ücretsiz kayıt + anahtar (EVDS_API_KEY) gerektirir",
+    "nan_threshold": 0.05,
+    "warn_range": null,
+    "last_fetched": "2026-11-06T13:28:30.122298+00:00"
+  },
+  "turkiye_tufe_aylik_yuzde": {
+    "name": "turkiye_tufe_aylik_yuzde",
+    "source": "TCMB EVDS",
+    "url": "https://evds3.tcmb.gov.tr/igmevdsms-dis/series=TP.TUKFIY2025.GENEL&startDate=01-01-2010&endDate=05-11-2026&type=json",
+    "frequency": "aylık",
+    "units": "% (aylık, türetilmiş)",
+    "publication_lag_days": 3,
+    "license_note": "TCMB EVDS ücretsiz kayıt + anahtar (EVDS_API_KEY) gerektirir",
+    "nan_threshold": 0.05,
+    "warn_range": [
+      -2.0,
+      20.0
+    ],
+    "last_fetched": "2026-11-05T20:50:02.916490+00:00"
+  },
+  "tufe_beklenti_pka": {
+    "name": "tufe_beklenti_pka",
+    "source": "TCMB Piyasa Katılımcıları Anketi (EVDS bie_urbek)",
+    "url": "https://evds3.tcmb.gov.tr/igmevdsms-dis/series=TP.BEK.S01.A.U&startDate=01-01-2013&endDate=06-11-2026&type=json",
+    "frequency": "aylık",
+    "units": "% (aylık TÜFE değişim beklentisi, uygun ortalama)",
+    "publication_lag_days": 0,
+    "license_note": "TCMB Piyasa Katılımcıları Anketi, Tanımsal İstatistikler (bie_urbek) grubunun uygun ortalama serisi (TP.BEK.S01.A.U); EVDS anahtarı (EVDS_API_KEY) gerekir. 2026-11-06 canlı teyit: medyan kardeş seri (TP.BEK.S01.A.M) farklı değerler döndürür ve kullanılmaz; .U değeri TCMB PKA raporunun uygun ortalamasıyla birebir uyuşur (Ekim 2026: 2.11).",
+    "nan_threshold": 0.05,
+    "warn_range": null,
+    "last_fetched": "2026-11-06T13:28:35.015944+00:00"
+  },
+  "fao_gida_endeks": {
+    "name": "fao_gida_endeks",
+    "source": "FAO",
+    "url": "https://www.fao.org/media/docs/worldfoodsituationlibraries/wfs-library/food_price_indices_data.csv",
+    "frequency": "aylık",
+    "units": "2014-2016=100",
+    "publication_lag_days": 30,
+    "license_note": "FAO gıda fiyat endeksi verisi (fao.org); kullanım FAO veri paylaşım koşullarına tabidir (erişim 2026-11-05)",
+    "nan_threshold": 0.05,
+    "warn_range": null,
+    "last_fetched": "2026-11-06T13:28:05.936499+00:00"
+  }
+}

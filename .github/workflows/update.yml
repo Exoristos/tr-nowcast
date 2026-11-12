@@ -1,0 +1,110 @@
+# Ayın 3-8'i arası her gün 06:00 UTC'de veri çekip kalite kontrolünden geçen
+# veriyi repoya yazar. Pencere TÜİK TÜFE açıklama takvimine göre seçildi:
+# TÜİK aylık TÜFE'yi ayın ilk iş günü civarında açıklar, 3-8 aralığı
+# gecikmeli açıklamaları da yakalar.
+name: veri güncelleme
+
+on:
+  schedule:
+    - cron: "0 6 3-8 * *" # ayın 3-8'i, 06:00 UTC (TÜİK açıklama penceresi)
+  workflow_dispatch:
+
+# Veri commit'i varsayılan GITHUB_TOKEN ile push'lanacak; checkout token'ı
+# git kimlik bilgisi olarak kalıcı tuttuğu için ekstra token gerekmez.
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10.3.3
+
+      - name: Bağımlılıkları kur
+        run: uv sync
+
+      # Secret tanımsızsa EVDS_API_KEY boş string olur; CLI anahtarsız
+      # evds/anket kaynaklarını bilgilendirip atlar (exit 0) — boru kırılmaz.
+      - name: Veri çek
+        env:
+          EVDS_API_KEY: ${{ secrets.EVDS_API_KEY }}
+        run: uv run trnowcast fetch
+
+      - name: Kalite kontrol
+        run: uv run trnowcast quality
+
+      # Chronos-2 ve TimesFM-3 ağırlıkları HF hub'dan ~/.cache/huggingface'e
+      # iner; cache miss'te indirme kabul. Sürüm yükselince anahtarın sonundaki
+      # -v1 elle artırılır.
+      - name: HF hub önbelleği (chronos-2.3.2 + timesfm-3.0.2)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-hub-chronos-2.3.2-timesfm-3.0.2-v1
+
+      # CI'da GPU yok; TSFM'ler CPU'da tek çıkarım yapar (aylık tek hedef).
+      # Bir model yine de çökerse ModelFailure ok:false ile yazılır, komut
+      # exit 0 verir — site verisi eksik modelle de ayakta kalır.
+      - name: Canlı nowcast (TSFM CPU fallback, çökerse ok:false ile atlanır)
+        run: uv run trnowcast nowcast
+
+      - name: Site veri ihracı
+        run: uv run trnowcast export
+
+      # Kalite kontrolü hard-fail ile biterse job burada durur ve bozuk veri
+      # repoya push'lanmaz.
+      - name: Veri değiştiyse commit ve push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+
+          # Anlamlı değişim tespiti: JSON'larda uçucu zaman damgaları
+          # (generated_at, cutoff_date, last_fetched, zaman) düşülüp
+          # karşılaştırılır — yalnız timestamp bump'ı commit üretmez. İçerik
+          # değişirse veri değişmese bile push'lanır: ok:false veren model
+          # sonraki koşumda iyileşirse düzeltilmiş çıktı haftalarca donup
+          # kalmaz (Review Focus 3). JSON olmayan dosyalar (parquet) ham
+          # bayt karşılaştırmasıyla anlamlı sayılır. Çıkış 1 = anlamlı değişim.
+          if python3 - <<'PY'
+          import json, subprocess, sys
+
+          UCUCU = {"generated_at", "cutoff_date", "last_fetched", "zaman"}
+
+          def temiz(x):
+              if isinstance(x, dict):
+                  return {k: temiz(v) for k, v in x.items() if k not in UCUCU}
+              if isinstance(x, list):
+                  return [temiz(o) for o in x]
+              return x
+
+          def blob(ref, yol):
+              r = subprocess.run(["git", "show", f"{ref}:{yol}"], capture_output=True)
+              return r.stdout if r.returncode == 0 else None
+
+          onemli = False
+          staged = subprocess.run(
+              ["git", "diff", "--cached", "--name-only", "HEAD", "--", "data/"],
+              capture_output=True, text=True).stdout.split()
+          for yol in staged:
+              yeni, eski = blob("", yol), blob("HEAD", yol)
+              if yeni is None or eski is None:
+                  onemli = True  # yeni dosya veya silme anlamlıdır
+                  break
+              try:
+                  onemli = temiz(json.loads(yeni)) != temiz(json.loads(eski))
+              except ValueError:  # JSON olmayan dosya (parquet) — ham karşılaştırma
+                  onemli = yeni != eski
+              if onemli:
+                  break
+
+          sys.exit(1 if onemli else 0)
+          PY
+          then
+            git commit -m "chore: otomatik veri güncellemesi"
+            git push
+          else
+            echo "Anlamlı veri değişimi yok (yalnız zaman damgası farklı) — commit atlanıyor."
+          fi

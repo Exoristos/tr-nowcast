@@ -1,0 +1,29 @@
+kanit URL: https://tr-nowcast-site.enis-erdogan10.workers.dev
+TR masaustu (1440x900) | konsol_hatasi: [] (beklenen: 0) -> OK
+TR masaustu (1440x900) | veri_hatasi_bandi: False (beklenen: False) -> OK
+TR masaustu (1440x900) | hero: '%2,18' (beklenen: '%2,18') -> OK
+TR masaustu (1440x900) | yillik: '~%31,5' (beklenen: '~%31,5') -> OK
+TR masaustu (1440x900) | anket_mae: '0,85' (beklenen: '0,85') -> OK
+TR masaustu (1440x900) | spark_nokta: 12 (beklenen: '>0') -> OK
+TR masaustu (1440x900) | grafik_polyline: 2 (beklenen: '>=2') -> OK
+TR masaustu (1440x900) | son_url: 'https://tr-nowcast-site.enis-erdogan10.workers.dev/' (beklenen: 'https://tr-nowcast-site.enis-erdogan10.workers.dev/') -> OK
+TR masaustu (1440x900) | ekran goruntusu: docs/kanit/tr-masaustu-1440.png
+EN masaustu (1440x900) | konsol_hatasi: [] (beklenen: 0) -> OK
+EN masaustu (1440x900) | veri_hatasi_bandi: False (beklenen: False) -> OK
+EN masaustu (1440x900) | hero: '2.18%' (beklenen: '2.18%') -> OK
+EN masaustu (1440x900) | yillik: '~31.5%' (beklenen: '~31.5%') -> OK
+EN masaustu (1440x900) | anket_mae: '0.85' (beklenen: '0.85') -> OK
+EN masaustu (1440x900) | spark_nokta: 12 (beklenen: '>0') -> OK
+EN masaustu (1440x900) | grafik_polyline: 2 (beklenen: '>=2') -> OK
+EN masaustu (1440x900) | son_url: 'https://tr-nowcast-site.enis-erdogan10.workers.dev/en/' (beklenen: 'https://tr-nowcast-site.enis-erdogan10.workers.dev/en/') -> OK
+EN masaustu (1440x900) | ekran goruntusu: docs/kanit/en-masaustu-1440.png
+Mobil (390x844, / -> /m/ 302) | konsol_hatasi: [] (beklenen: 0) -> OK
+Mobil (390x844, / -> /m/ 302) | veri_hatasi_bandi: False (beklenen: False) -> OK
+Mobil (390x844, / -> /m/ 302) | hero: '2.18%' (beklenen: '2.18%') -> OK
+Mobil (390x844, / -> /m/ 302) | yillik: '~31.5%' (beklenen: '~31.5%') -> OK
+Mobil (390x844, / -> /m/ 302) | anket_mae: '0.85' (beklenen: '0.85') -> OK
+Mobil (390x844, / -> /m/ 302) | spark_nokta: 12 (beklenen: '>0') -> OK
+Mobil (390x844, / -> /m/ 302) | grafik_polyline: 2 (beklenen: '>=2') -> OK
+Mobil (390x844, / -> /m/ 302) | son_url: 'https://tr-nowcast-site.enis-erdogan10.workers.dev/m/' (beklenen: 'https://tr-nowcast-site.enis-erdogan10.workers.dev/m/') -> OK
+Mobil (390x844, / -> /m/ 302) | ekran goruntusu: docs/kanit/mobil-390x844.png
+SONUC: TUM KONTROLLER OK

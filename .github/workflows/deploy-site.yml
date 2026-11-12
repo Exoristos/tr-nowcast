@@ -1,0 +1,59 @@
+# Site deploy'u: dispatch ile tetiklenir, yalnız workers.dev'e yayınlar.
+# Custom domain (exoristos.dev) bu workflow'da YOK — ayrı onay konusu.
+# EVDS anahtarı bu workflow'a GİRMEZ: export veriyi repodaki data/ parquet'ten
+# üretir, ağ çağrısı yapmaz; worker yalnız AI binding + assets alır.
+name: site deploy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10.3.3
+
+      - name: Python bağımlılıkları
+        run: uv sync
+
+      - name: Site verisi ihraç et ve assets_root'a kopyala
+        run: |
+          uv run python -c "from pathlib import Path; from trnowcast.export import export_site; export_site(assets_root=Path('site/assets_root'))"
+
+      - name: Node bağımlılıkları
+        run: npm ci
+        working-directory: site
+
+      - name: Site testleri (vitest)
+        run: npm test
+        working-directory: site
+
+      - name: Tür kontrolü + deploy dry-run
+        run: npm run check
+        working-directory: site
+
+      - name: Deploy (workers.dev)
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          URL=$(npx wrangler deploy 2>&1 | grep -o 'https://[a-z0-9.-]*\.workers\.dev' | head -1)
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Deploy URL: $URL"
+        working-directory: site
+
+      - name: Canary smoke — ana sayfa ve JSON 200
+        run: |
+          URL="${{ steps.deploy.outputs.url }}"
+          test -n "$URL" || { echo "Deploy URL çözülemedi"; exit 1; }
+          KOD=$(curl -s -o /dev/null -w '%{http_code}' "$URL/")
+          echo "GET $URL/ → $KOD"
+          test "$KOD" = "200"
+          JKOD=$(curl -s -o /dev/null -w '%{http_code}' "$URL/nowcast.json")
+          echo "GET $URL/nowcast.json → $JKOD"
+          test "$JKOD" = "200"

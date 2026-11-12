@@ -1,0 +1,24 @@
+// Tr-Nowcast statik site worker'ı — assets servis + mobil UA yönlendirme + POST /api/sohbet.
+// Veri güncellemesi = yeni commit (data/); deploy .github/workflows/deploy-site.yml ile yapılır.
+// MOCK var'ı KALDIRILDI (plan T27): sohbet canlı LLM'e gider; MOCK kod yolu yalnız
+// vitest ortamında mock env ile koşar. İki taban birden: workers.dev kökü VE
+// exoristos.dev/tr-nowcast — önekli yollar worker'da soyulur (src/worker.ts ONEK).
+// run_worker_first: assets varsayılan olarak worker'ı atlar; mobil yönlendirme
+// kararının worker'da verilebilmesi için / ve /index.html önce worker'a verilir.
+// Önek altındaki yollarla hiçbir asset eşleşmez, hepsi worker'a düşer.
+{
+  "name": "tr-nowcast-site",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "exoristos.dev/tr-nowcast", "zone_name": "exoristos.dev" },
+    { "pattern": "exoristos.dev/tr-nowcast/*", "zone_name": "exoristos.dev" }
+  ],
+  "ai": { "binding": "AI" },
+  "assets": {
+    "directory": "./assets_root",
+    "binding": "ASSETS",
+    "run_worker_first": ["/", "/index.html"]
+  }
+}
